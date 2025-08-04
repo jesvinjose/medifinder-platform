@@ -1,0 +1,10 @@
+// routes/auth.routes.ts
+import { Router } from "express";
+import { register, login, refreshToken, logout, } from "../controllers/auth.controller";
+const router = Router();
+// Public routes
+router.post("/register", register);
+router.post("/login", login);
+router.post("/refresh-token", refreshToken);
+router.post("/logout", logout);
+export default router;

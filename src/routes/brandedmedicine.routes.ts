@@ -1,0 +1,19 @@
+import { Router } from "express";
+import {
+  getAllBrandedMedicines,
+  getBrandedMedicineById,
+  createBrandedMedicine,
+  uploadCsvAndSaveToDB,
+  searchMedicines,
+} from "../controllers/brandedmedicine.controller.js";
+import { upload } from "../utils/multer.js";
+
+const router = Router();
+
+router.get("/search", searchMedicines);
+router.get("/", getAllBrandedMedicines);
+router.get("/:id", getBrandedMedicineById);
+router.post("/", createBrandedMedicine);
+router.post("/upload_branded", upload.single("file"), uploadCsvAndSaveToDB);
+
+export default router;

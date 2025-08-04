@@ -1,0 +1,4 @@
+Brand Name,Generic Name,Company,Packing,PTR (Per Unit),MRP
+Zerodol-P,Aceclofenac 100mg and Paracetamol 325mg Tablets,Ipca,10's,6.5,10.5
+Voveran Emulgel,Diclofenac Gel IP 1.16%w/w (Diclofenac Diethylamine),Novartis,15 g,7.2,12
+Etoshine 90,Etoricoxib Tablets IP 90 mg,Sun Pharma,10's,21,31

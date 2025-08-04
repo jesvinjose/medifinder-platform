@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/index.ts"],
+  "sourcesContent": ["import express from \"express\";\r\nimport mongoose from \"mongoose\";\r\nimport dotenv from \"dotenv\";\r\nimport genericmedicineRoutes from \"./routes/genericmedicine\";\r\n\r\ndotenv.config();\r\n\r\nconst app = express();\r\nconst PORT = process.env.PORT!;\r\nconst MONGO_URI = process.env.MONGODB_URI!; // Adjust as needed\r\nmongoose\r\n  .connect(MONGO_URI)\r\n  .then(() => console.log(\"\u2705 MongoDB connected\"))\r\n  .catch((err) => console.error(\"\u274C MongoDB connection error:\", err));\r\n\r\napp.use(express.json());\r\napp.use(\"/api/genericmedicine\", genericmedicineRoutes);\r\n\r\napp.listen(PORT, () => {\r\n  console.log(`\uD83D\uDE80 Server running at http://localhost:${PORT}`);\r\n});\r\n"],
+  "mappings": "AAAA,OAAO,aAAa;AACpB,OAAO,cAAc;AACrB,OAAO,YAAY;AACnB,OAAO,2BAA2B;AAElC,OAAO,OAAO;AAEd,MAAM,MAAM,QAAQ;AACpB,MAAM,OAAO,QAAQ,IAAI;AACzB,MAAM,YAAY,QAAQ,IAAI;AAC9B,SACG,QAAQ,SAAS,EACjB,KAAK,MAAM,QAAQ,IAAI,0BAAqB,CAAC,EAC7C,MAAM,CAAC,QAAQ,QAAQ,MAAM,oCAA+B,GAAG,CAAC;AAEnE,IAAI,IAAI,QAAQ,KAAK,CAAC;AACtB,IAAI,IAAI,wBAAwB,qBAAqB;AAErD,IAAI,OAAO,MAAM,MAAM;AACrB,UAAQ,IAAI,gDAAyC,IAAI,EAAE;AAC7D,CAAC;",
+  "names": []
+}
