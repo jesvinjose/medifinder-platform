@@ -7,11 +7,12 @@ const generateRefreshToken = (user) => jwt.sign(user, process.env.REFRESH_TOKEN_
 export const register = async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
-        const existing = await User.findOne({ email });
+        const existing = await User.findOne({ email, role });
         if (existing)
-            return res
-                .status(400)
-                .json({ message: "User already exists", status: false });
+            return res.status(400).json({
+                message: `User with this ${email} already exists for the role:${role}`,
+                status: false,
+            });
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await User.create({
             name,
@@ -35,8 +36,8 @@ export const register = async (req, res) => {
 };
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email });
+        const { email, role, password } = req.body;
+        const user = await User.findOne({ email, role });
         if (!user)
             return res
                 .status(400)

@@ -6,6 +6,8 @@ import genericmedicineRoutes from "./routes/genericmedicine.routes";
 import brandedmedicineRoutes from "./routes/brandedmedicine.routes";
 import authRoutes from "./routes/auth.routes";
 import medicalStoreRoutes from "./routes/medicalstore.routes";
+import pharmaCompanyRoutes from "./routes/pharmacompany.routes";
+import pharmaBranchRoutes from "./routes/pharmabranch.routes";
 
 dotenv.config();
 
@@ -31,6 +33,8 @@ app.use("/api/genericmedicine", genericmedicineRoutes);
 app.use("/api/brandedmedicine", brandedmedicineRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/medicalstore", medicalStoreRoutes);
+app.use("/api/pharmacompany", pharmaCompanyRoutes);
+app.use("/api/pharmabranch", pharmaBranchRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);

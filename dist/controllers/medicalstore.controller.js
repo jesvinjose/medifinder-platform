@@ -1,4 +1,5 @@
 import MedicalStore from "../models/MedicalStore.js";
+import StoreMedicineStock from "../models/StoreMedicineStock.js";
 export const createMedicalStore = async (req, res) => {
     try {
         if (!req.user) {
@@ -29,12 +30,98 @@ export const createMedicalStore = async (req, res) => {
             .json({ message: "Store created", data: store, status: true });
     }
     catch (err) {
-        res
-            .status(500)
-            .json({
+        res.status(500).json({
             message: "Error creating store",
             error: err.message,
             status: false,
         });
+    }
+};
+export const addOrUpdateStock = async (req, res) => {
+    try {
+        const store = await MedicalStore.findOne({ userId: req.user._id });
+        if (!store)
+            return res.status(404).json({ message: "Store not found" });
+        const { brandedMedicineId, quantity, price } = req.body;
+        const updated = await StoreMedicineStock.findOneAndUpdate({ storeId: store._id, brandedMedicineId }, { quantity, price, lastUpdated: new Date() }, { upsert: true, new: true });
+        res
+            .status(200)
+            .json({ message: "Stock added/updated", data: updated, status: true });
+    }
+    catch (err) {
+        res
+            .status(500)
+            .json({
+            message: "Failed to update stock",
+            error: err.message,
+            status: false,
+        });
+    }
+};
+export const listStoreMedicines = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized", status: false });
+        }
+        const { page = 1, limit = 10, search = "" } = req.query;
+        const skip = (Number(page) - 1) * Number(limit);
+        const store = await MedicalStore.findOne({ userId: req.user._id });
+        if (!store) {
+            return res.status(404).json({ message: "Store not found", status: false });
+        }
+        // Aggregation pipeline
+        const pipeline = [
+            { $match: { storeId: store._id } },
+            {
+                $lookup: {
+                    from: "brandedmedicines",
+                    localField: "brandedMedicineId",
+                    foreignField: "_id",
+                    as: "brandedMedicine",
+                },
+            },
+            { $unwind: "$brandedMedicine" },
+            {
+                $lookup: {
+                    from: "genericmedicines",
+                    localField: "brandedMedicine.generic",
+                    foreignField: "_id",
+                    as: "genericInfo",
+                },
+            },
+            { $unwind: "$genericInfo" },
+        ];
+        // Search across multiple fields
+        if (search) {
+            const regex = new RegExp(search.toString(), "i");
+            pipeline.push({
+                $match: {
+                    $or: [
+                        { "brandedMedicine.name": regex },
+                        { "brandedMedicine.company": regex },
+                        { "brandedMedicine.packing": regex },
+                        { "genericInfo.name": regex },
+                    ],
+                },
+            });
+        }
+        // Count total results
+        const totalCountPipeline = [...pipeline, { $count: "total" }];
+        const [countResult] = await StoreMedicineStock.aggregate(totalCountPipeline);
+        const total = countResult?.total || 0;
+        // Pagination
+        pipeline.push({ $skip: skip }, { $limit: Number(limit) });
+        const results = await StoreMedicineStock.aggregate(pipeline);
+        res.json({
+            message: "Medicines fetched successfully",
+            status: true,
+            total,
+            page: Number(page),
+            limit: Number(limit),
+            data: results,
+        });
+    }
+    catch (err) {
+        res.status(500).json({ message: "Failed to fetch store medicines", error: err.message, status: false });
     }
 };
