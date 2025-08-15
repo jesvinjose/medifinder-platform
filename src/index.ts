@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth.routes";
 import medicalStoreRoutes from "./routes/medicalstore.routes";
 import pharmaCompanyRoutes from "./routes/pharmacompany.routes";
 import pharmaBranchRoutes from "./routes/pharmabranch.routes";
+import branchInventoryRoutes from "./routes/branchinventory.routes";
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/medicalstore", medicalStoreRoutes);
 app.use("/api/pharmacompany", pharmaCompanyRoutes);
 app.use("/api/pharmabranch", pharmaBranchRoutes);
+app.use("/api/branchinventory", branchInventoryRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);

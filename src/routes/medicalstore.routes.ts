@@ -4,6 +4,7 @@ import {
   addOrUpdateStock,
   createMedicalStore,
   listStoreMedicines,
+  createOrder,
 } from "../controllers/medicalstore.controller";
 import {
   authenticate,
@@ -24,6 +25,12 @@ router.get(
   authenticate,
   authorizeRoles(["medical_store"]),
   listStoreMedicines
+);
+router.post(
+  "/create_order",
+  authenticate,
+  authorizeRoles(["medical_store"]),
+  createOrder
 );
 
 export default router;

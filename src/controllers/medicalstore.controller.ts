@@ -2,6 +2,10 @@
 import { Request, Response } from "express";
 import MedicalStore from "../models/MedicalStore.js";
 import StoreMedicineStock from "../models/StoreMedicineStock.js";
+import Order from "../models/Order";
+import BranchInventory from "../models/BranchInventory";
+import { Types } from "mongoose";
+import PharmaBranch from "../models/PharmaBranch.js";
 
 export interface AuthenticatedRequest extends Request {
   user?: {
@@ -75,17 +79,18 @@ export const addOrUpdateStock = async (
       .status(200)
       .json({ message: "Stock added/updated", data: updated, status: true });
   } catch (err: any) {
-    res
-      .status(500)
-      .json({
-        message: "Failed to update stock",
-        error: err.message,
-        status: false,
-      });
+    res.status(500).json({
+      message: "Failed to update stock",
+      error: err.message,
+      status: false,
+    });
   }
 };
 
-export const listStoreMedicines = async (req: AuthenticatedRequest, res: Response) => {
+export const listStoreMedicines = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
   try {
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized", status: false });
@@ -96,7 +101,9 @@ export const listStoreMedicines = async (req: AuthenticatedRequest, res: Respons
 
     const store = await MedicalStore.findOne({ userId: req.user._id });
     if (!store) {
-      return res.status(404).json({ message: "Store not found", status: false });
+      return res
+        .status(404)
+        .json({ message: "Store not found", status: false });
     }
 
     // Aggregation pipeline
@@ -141,7 +148,9 @@ export const listStoreMedicines = async (req: AuthenticatedRequest, res: Respons
 
     // Count total results
     const totalCountPipeline = [...pipeline, { $count: "total" }];
-    const [countResult] = await StoreMedicineStock.aggregate(totalCountPipeline);
+    const [countResult] = await StoreMedicineStock.aggregate(
+      totalCountPipeline
+    );
     const total = countResult?.total || 0;
 
     // Pagination
@@ -158,6 +167,97 @@ export const listStoreMedicines = async (req: AuthenticatedRequest, res: Respons
       data: results,
     });
   } catch (err: any) {
-    res.status(500).json({ message: "Failed to fetch store medicines", error: err.message, status: false });
+    res.status(500).json({
+      message: "Failed to fetch store medicines",
+      error: err.message,
+      status: false,
+    });
   }
 };
+
+interface OrderItemInput {
+  brandedMedicineId: Types.ObjectId;
+  quantity: number;
+  price: number;
+}
+
+export const createOrder = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized", status: false });
+    }
+
+    const store = await MedicalStore.findOne({ userId: req.user._id });
+
+    if (!store) {
+      return res
+        .status(404)
+        .json({ message: "Medical store not found", status: false });
+    }
+    
+    const { branchId, items, notes } = req.body as {
+      branchId: Types.ObjectId;
+      items: OrderItemInput[];
+      notes?: string;
+    };
+
+    // Fetch branch and ensure it exists
+    const branch = await PharmaBranch.findById(branchId);
+    if (!branch) {
+      return res
+        .status(404)
+        .json({ message: "Branch not found", status: false });
+    }
+
+    const companyId = branch.companyId; // derive from DB, not frontend
+
+    // Validate inventory for each item
+    for (const item of items) {
+      const inventory = await BranchInventory.findOne({
+        branchId,
+        brandedMedicineId: item.brandedMedicineId,
+      });
+
+      if (!inventory) {
+        return res
+          .status(400)
+          .json({ message: "Medicine not found in branch inventory" });
+      }
+      if (inventory.quantity < item.quantity) {
+        return res.status(400).json({
+          message: `Insufficient stock for ${item.brandedMedicineId}`,
+        });
+      }
+    }
+
+    // Calculate total
+    const totalAmount = items.reduce(
+      (sum: number, i: OrderItemInput) => sum + i.price * i.quantity,
+      0
+    );
+
+    const order = await Order.create({
+      medicalStoreId: store?._id,
+      branchId,
+      companyId,
+      items,
+      totalAmount,
+      notes,
+    });
+
+    res.status(201).json({
+      message: "Order placed successfully",
+      data: order,
+      status: true,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      message: "Order creation failed",
+      error: err.message,
+      status: false,
+    });
+  }
+};
+
+

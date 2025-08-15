@@ -13,8 +13,16 @@ const userSchema = new Schema({
             "medical_store",
             "admin",
             "delivery_partner",
+            "pharma_branch",
         ],
         default: "user",
+    },
+    branchId: {
+        type: Schema.Types.ObjectId,
+        ref: "PharmaBranch",
+        required: function () {
+            return this.role === "pharma_branch";
+        },
     },
 }, { timestamps: true });
 export default mongoose.model("User", userSchema);

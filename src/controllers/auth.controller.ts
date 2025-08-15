@@ -61,7 +61,13 @@ export const login = async (req: Request, res: Response) => {
         .status(400)
         .json({ message: "Invalid email or password", status: false });
 
-    const payload = { _id: user._id, role: user.role } as object;
+    const payload: Record<string, any> = {
+      _id: user._id,
+      role: user.role,
+    };
+    if (user.role === "pharma_branch" && user.branchId) {
+      payload.branchId = user.branchId;
+    }
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
 

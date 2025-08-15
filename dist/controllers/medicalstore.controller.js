@@ -1,5 +1,8 @@
 import MedicalStore from "../models/MedicalStore.js";
 import StoreMedicineStock from "../models/StoreMedicineStock.js";
+import Order from "../models/Order";
+import BranchInventory from "../models/BranchInventory";
+import PharmaBranch from "../models/PharmaBranch.js";
 export const createMedicalStore = async (req, res) => {
     try {
         if (!req.user) {
@@ -49,9 +52,7 @@ export const addOrUpdateStock = async (req, res) => {
             .json({ message: "Stock added/updated", data: updated, status: true });
     }
     catch (err) {
-        res
-            .status(500)
-            .json({
+        res.status(500).json({
             message: "Failed to update stock",
             error: err.message,
             status: false,
@@ -67,7 +68,9 @@ export const listStoreMedicines = async (req, res) => {
         const skip = (Number(page) - 1) * Number(limit);
         const store = await MedicalStore.findOne({ userId: req.user._id });
         if (!store) {
-            return res.status(404).json({ message: "Store not found", status: false });
+            return res
+                .status(404)
+                .json({ message: "Store not found", status: false });
         }
         // Aggregation pipeline
         const pipeline = [
@@ -122,6 +125,71 @@ export const listStoreMedicines = async (req, res) => {
         });
     }
     catch (err) {
-        res.status(500).json({ message: "Failed to fetch store medicines", error: err.message, status: false });
+        res.status(500).json({
+            message: "Failed to fetch store medicines",
+            error: err.message,
+            status: false,
+        });
+    }
+};
+export const createOrder = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized", status: false });
+        }
+        const store = await MedicalStore.findOne({ userId: req.user._id });
+        if (!store) {
+            return res
+                .status(404)
+                .json({ message: "Medical store not found", status: false });
+        }
+        const { branchId, items, notes } = req.body;
+        // Fetch branch and ensure it exists
+        const branch = await PharmaBranch.findById(branchId);
+        if (!branch) {
+            return res
+                .status(404)
+                .json({ message: "Branch not found", status: false });
+        }
+        const companyId = branch.companyId; // derive from DB, not frontend
+        // Validate inventory for each item
+        for (const item of items) {
+            const inventory = await BranchInventory.findOne({
+                branchId,
+                brandedMedicineId: item.brandedMedicineId,
+            });
+            if (!inventory) {
+                return res
+                    .status(400)
+                    .json({ message: "Medicine not found in branch inventory" });
+            }
+            if (inventory.quantity < item.quantity) {
+                return res.status(400).json({
+                    message: `Insufficient stock for ${item.brandedMedicineId}`,
+                });
+            }
+        }
+        // Calculate total
+        const totalAmount = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+        const order = await Order.create({
+            medicalStoreId: store?._id,
+            branchId,
+            companyId,
+            items,
+            totalAmount,
+            notes,
+        });
+        res.status(201).json({
+            message: "Order placed successfully",
+            data: order,
+            status: true,
+        });
+    }
+    catch (err) {
+        res.status(500).json({
+            message: "Order creation failed",
+            error: err.message,
+            status: false,
+        });
     }
 };

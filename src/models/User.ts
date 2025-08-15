@@ -5,7 +5,15 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  role: "user" | "doctor" | "pharma_company" | "medical_store" | "admin";
+  role:
+    | "user"
+    | "doctor"
+    | "pharma_company"
+    | "medical_store"
+    | "admin"
+    | "delivery_partner"
+    | "pharma_branch";
+  branchId?: mongoose.Types.ObjectId;
 }
 
 const userSchema = new Schema<IUser>(
@@ -22,8 +30,16 @@ const userSchema = new Schema<IUser>(
         "medical_store",
         "admin",
         "delivery_partner",
+        "pharma_branch",
       ],
       default: "user",
+    },
+    branchId: {
+      type: Schema.Types.ObjectId,
+      ref: "PharmaBranch",
+      required: function (this: IUser) {
+        return this.role === "pharma_branch";
+      },
     },
   },
   { timestamps: true }

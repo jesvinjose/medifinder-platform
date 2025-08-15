@@ -48,6 +48,14 @@ export const addInventory = async (
       { upsert: true, new: true }
     );
 
-    res.status(200).json({ message: "Inventory updated", inventory });
-  } catch (error) {}
+    res
+      .status(200)
+      .json({ message: "Inventory updated", status: true, data: inventory });
+  } catch (error: any) {
+    res.status(500).json({
+      message: "Error updating inventory",
+      error: error.message,
+      status: false,
+    });
+  }
 };

@@ -1,4 +1,5 @@
 // controllers/pharmaCompany.controller.ts
+import Order from "../models/Order";
 import PharmaCompany from "../models/PharmaCompany";
 import { Request, Response } from "express";
 
@@ -41,12 +42,45 @@ export const createPharmaCompany = async (
 
     res.status(201).json({ message: "Pharma company created", company });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message:
-          error instanceof Error ? error.message : "Error creating company",
-        status: false,
-      });
+    res.status(500).json({
+      message:
+        error instanceof Error ? error.message : "Error creating company",
+      status: false,
+    });
+  }
+};
+
+export const listCompanyOrders = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized", status: false });
+    }
+
+    const company = await PharmaCompany.findOne({ userId: req.user._id });
+    if (!company) {
+      return res
+        .status(404)
+        .json({ message: "Pharma company not found", status: false });
+    }
+
+    const orders = await Order.find({ companyId: company._id })
+      .populate("medicalStoreId", "storeName city")
+      .populate("branchId", "branchName city address")
+      .populate("items.brandedMedicineId", "name packing");
+
+    res.json({
+      message: "Orders fetched successfully",
+      data: orders,
+      status: true,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      message: "Failed to fetch orders",
+      error: err.message,
+      status: false,
+    });
   }
 };
