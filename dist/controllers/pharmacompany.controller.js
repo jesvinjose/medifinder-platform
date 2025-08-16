@@ -1,5 +1,6 @@
 // controllers/pharmaCompany.controller.ts
 import Order from "../models/Order";
+import PharmaBranch from "../models/PharmaBranch";
 import PharmaCompany from "../models/PharmaCompany";
 export const createPharmaCompany = async (req, res) => {
     try {
@@ -32,6 +33,48 @@ export const createPharmaCompany = async (req, res) => {
         });
     }
 };
+export const updatePharmaCompany = async (req, res) => {
+    try {
+        if (!req.user)
+            return res.status(401).json({ message: "Unauthorized" });
+        const { companyName, gstNumber, contactEmail, contactPhone, address } = req.body;
+        const company = await PharmaCompany.findOneAndUpdate({ userId: req.user._id }, { companyName, gstNumber, contactEmail, contactPhone, address }, { new: true });
+        if (!company) {
+            return res.status(404).json({ message: "Company not found", status: false });
+        }
+        res.json({ message: "Company updated", company, status: true });
+    }
+    catch (err) {
+        res.status(500).json({ message: "Update failed", error: err.message, status: false });
+    }
+};
+export const getPharmaCompany = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized: Missing user", status: false });
+        }
+        // Find company for this logged-in user
+        const company = await PharmaCompany.findOne({ userId: req.user._id });
+        if (!company) {
+            return res.status(404).json({
+                message: "Pharma company not found for this user",
+                status: false,
+            });
+        }
+        res.json({
+            message: "Pharma company details fetched successfully",
+            data: company,
+            status: true,
+        });
+    }
+    catch (err) {
+        res.status(500).json({
+            message: "Failed to fetch pharma company",
+            error: err.message,
+            status: false,
+        });
+    }
+};
 export const listCompanyOrders = async (req, res) => {
     try {
         if (!req.user) {
@@ -56,6 +99,36 @@ export const listCompanyOrders = async (req, res) => {
     catch (err) {
         res.status(500).json({
             message: "Failed to fetch orders",
+            error: err.message,
+            status: false,
+        });
+    }
+};
+export const listPharmaBranches = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res
+                .status(401)
+                .json({ message: "Unauthorized: Missing user", status: false });
+        }
+        // Find company for this user
+        const company = await PharmaCompany.findOne({ userId: req.user._id });
+        if (!company) {
+            return res
+                .status(404)
+                .json({ message: "Pharma company not found", status: false });
+        }
+        // Fetch all branches under this company
+        const branches = await PharmaBranch.find({ companyId: company._id });
+        res.json({
+            message: "Branches fetched successfully",
+            data: branches,
+            status: true,
+        });
+    }
+    catch (err) {
+        res.status(500).json({
+            message: "Failed to fetch branches",
             error: err.message,
             status: false,
         });
