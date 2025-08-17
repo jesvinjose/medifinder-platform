@@ -1,6 +1,6 @@
 // routes/auth.routes.ts
 import { Router } from "express";
-import { register, login, refreshToken, logout, } from "../controllers/auth.controller";
+import { register, login, refreshToken, logout, } from "../controllers/auth.controller.js";
 const router = Router();
 // Public routes
 router.post("/register", register);

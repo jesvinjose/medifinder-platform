@@ -7,12 +7,12 @@ import {
   listCompanyOrders,
   listPharmaBranches,
   updatePharmaCompany,
-} from "../controllers/pharmacompany.controller";
+} from "../controllers/pharmacompany.controller.js";
 
 import {
   authenticate,
   authorizeRoles,
-} from "../middleware/authenticate.middleware";
+} from "../middleware/authenticate.middleware.js";
 const router = express.Router();
 
 router.post(
