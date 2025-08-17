@@ -1,7 +1,7 @@
-import User from "../models/User";
+import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import RefreshToken from "../models/RefreshToken";
+import RefreshToken from "../models/RefreshToken.js";
 const generateAccessToken = (user) => jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "15m" });
 const generateRefreshToken = (user) => jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
 export const register = async (req, res) => {

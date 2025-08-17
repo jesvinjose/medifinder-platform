@@ -1,7 +1,7 @@
 import MedicalStore from "../models/MedicalStore.js";
 import StoreMedicineStock from "../models/StoreMedicineStock.js";
-import Order from "../models/Order";
-import BranchInventory from "../models/BranchInventory";
+import Order from "../models/Order.js";
+import BranchInventory from "../models/BranchInventory.js";
 import PharmaBranch from "../models/PharmaBranch.js";
 export const createMedicalStore = async (req, res) => {
     try {

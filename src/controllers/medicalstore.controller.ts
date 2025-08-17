@@ -2,8 +2,8 @@
 import { Request, Response } from "express";
 import MedicalStore from "../models/MedicalStore.js";
 import StoreMedicineStock from "../models/StoreMedicineStock.js";
-import Order from "../models/Order";
-import BranchInventory from "../models/BranchInventory";
+import Order from "../models/Order.js";
+import BranchInventory from "../models/BranchInventory.js";
 import { Types } from "mongoose";
 import PharmaBranch from "../models/PharmaBranch.js";
 

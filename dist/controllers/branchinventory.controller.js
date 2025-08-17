@@ -1,5 +1,5 @@
-import BranchInventory from "../models/BranchInventory";
-import PharmaBranch from "../models/PharmaBranch";
+import BranchInventory from "../models/BranchInventory.js";
+import PharmaBranch from "../models/PharmaBranch.js";
 export const addInventory = async (req, res) => {
     try {
         if (!req.user) {

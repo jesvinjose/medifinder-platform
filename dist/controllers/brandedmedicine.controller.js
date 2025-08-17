@@ -1,5 +1,5 @@
-import { BrandedMedicine } from "../models/BrandedMedicine";
-import { GenericMedicine } from "../models/GenericMedicine";
+import { BrandedMedicine } from "../models/BrandedMedicine.js";
+import { GenericMedicine } from "../models/GenericMedicine.js";
 import path from "path";
 import { importCSV } from "../utils/csvimporter.js";
 // Get all branded medicines
