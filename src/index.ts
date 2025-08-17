@@ -19,7 +19,10 @@ const MONGO_URI = process.env.MONGODB_URI!; // Adjust as needed
 // ✅ USE CORS
 app.use(
   cors({
-    origin: "http://localhost:3000", // ✅ allow frontend origin
+    origin: [
+      "http://localhost:3000",
+      "https://medifinder-platform.onrender.com",
+    ], // ✅ allow frontend origin
     credentials: true, // optional, useful for cookies
   })
 );
