@@ -2,6 +2,7 @@
 import Order from "../models/Order";
 import PharmaBranch from "../models/PharmaBranch";
 import PharmaCompany from "../models/PharmaCompany";
+import User from "../models/User";
 export const createPharmaCompany = async (req, res) => {
     try {
         if (!req.user) {
@@ -40,18 +41,24 @@ export const updatePharmaCompany = async (req, res) => {
         const { companyName, gstNumber, contactEmail, contactPhone, address } = req.body;
         const company = await PharmaCompany.findOneAndUpdate({ userId: req.user._id }, { companyName, gstNumber, contactEmail, contactPhone, address }, { new: true });
         if (!company) {
-            return res.status(404).json({ message: "Company not found", status: false });
+            return res
+                .status(404)
+                .json({ message: "Company not found", status: false });
         }
         res.json({ message: "Company updated", company, status: true });
     }
     catch (err) {
-        res.status(500).json({ message: "Update failed", error: err.message, status: false });
+        res
+            .status(500)
+            .json({ message: "Update failed", error: err.message, status: false });
     }
 };
 export const getPharmaCompany = async (req, res) => {
     try {
         if (!req.user) {
-            return res.status(401).json({ message: "Unauthorized: Missing user", status: false });
+            return res
+                .status(401)
+                .json({ message: "Unauthorized: Missing user", status: false });
         }
         // Find company for this logged-in user
         const company = await PharmaCompany.findOne({ userId: req.user._id });
@@ -131,6 +138,40 @@ export const listPharmaBranches = async (req, res) => {
             message: "Failed to fetch branches",
             error: err.message,
             status: false,
+        });
+    }
+};
+export const listBranchUsers = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        const userId = req.user._id; // logged in company user
+        // 1. Find company for this user
+        const company = await PharmaCompany.findOne({ userId });
+        if (!company) {
+            return res.status(400).json({ message: "Pharma company not found" });
+        }
+        // 2. Get all branches for this company
+        const branches = await PharmaBranch.find({ companyId: company._id }, "_id");
+        const branchIds = branches.map((b) => b._id);
+        // 3. Find all users with role=pharma_branch linked to these branches
+        const branchUsers = await User.find({
+            role: "pharma_branch",
+            branchId: { $in: branchIds },
+        })
+            .populate("branchId", "branchName city pincode") // optional: show branch details
+            .select("-password"); // hide password
+        return res.json({
+            success: true,
+            count: branchUsers.length,
+            users: branchUsers,
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: error instanceof Error ? error.message : "Error fetching branch users",
         });
     }
 };
