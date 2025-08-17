@@ -21,7 +21,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://medifinder-platform.onrender.com",
+      "https://med-finder-application-frontend-8do.vercel.app",
     ], // ✅ allow frontend origin
     credentials: true, // optional, useful for cookies
   })
