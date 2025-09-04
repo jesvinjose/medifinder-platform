@@ -1,6 +1,6 @@
 // routes/pharmaBranch.routes.ts
 import express from "express";
-import { createBranchUser, createPharmaBranch } from "../controllers/pharmabranch.controller.js";
+import { listBranchOrders } from "../controllers/pharmabranch.controller.js";
 import {
   authenticate,
   authorizeRoles,
@@ -9,17 +9,10 @@ import {
 const router = express.Router();
 
 router.post(
-  "/create_pharma_branch",
+  "/list_branch_orders",
   authenticate,
-  authorizeRoles(["pharma_company"]),
-  createPharmaBranch
+  authorizeRoles(["pharma_branch"]),
+  listBranchOrders
 );
-
-router.post(
-  "/create_branch_user",
-  authenticate,
-  authorizeRoles(["pharma_company"]),
-  createBranchUser
-)
 
 export default router;

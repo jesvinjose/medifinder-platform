@@ -1,11 +1,13 @@
 // models/BranchInventory.ts
 import mongoose, { Schema } from "mongoose";
 const branchInventorySchema = new Schema({
-    branchId: {
-        type: Schema.Types.ObjectId,
-        ref: "PharmaBranch",
-        required: true,
-    },
+    branchIds: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "PharmaBranch",
+            required: true,
+        },
+    ],
     brandedMedicineId: {
         type: Schema.Types.ObjectId,
         ref: "BrandedMedicine",
@@ -32,6 +34,6 @@ const branchInventorySchema = new Schema({
         default: Date.now,
     },
 }, { timestamps: true });
-// Optional: Prevent duplicate entries for the same medicine in a branch
-branchInventorySchema.index({ branchId: 1, brandedMedicineId: 1 }, { unique: true });
+// ✅ new index: ensure unique per medicine + branch combination
+branchInventorySchema.index({ brandedMedicineId: 1, branchIds: 1 }, { unique: true });
 export default mongoose.model("BranchInventory", branchInventorySchema);

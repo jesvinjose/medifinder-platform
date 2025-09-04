@@ -15,7 +15,10 @@ const PORT = process.env.PORT;
 const MONGO_URI = process.env.MONGODB_URI; // Adjust as needed
 // ✅ USE CORS
 app.use(cors({
-    origin: "http://localhost:3000", // ✅ allow frontend origin
+    origin: [
+        "http://localhost:3000",
+        "https://med-finder-application-frontend-8do.vercel.app",
+    ], // ✅ allow frontend origin
     credentials: true, // optional, useful for cookies
 }));
 mongoose

@@ -2,7 +2,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IBranchInventory extends Document {
-  branchId: mongoose.Types.ObjectId;
+  branchIds: mongoose.Types.ObjectId[];
   brandedMedicineId: mongoose.Types.ObjectId;
   quantity: number;
   priceToRetailer: number;
@@ -12,11 +12,13 @@ export interface IBranchInventory extends Document {
 
 const branchInventorySchema = new Schema<IBranchInventory>(
   {
-    branchId: {
-      type: Schema.Types.ObjectId,
-      ref: "PharmaBranch",
-      required: true,
-    },
+    branchIds: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "PharmaBranch",
+        required: true,
+      },
+    ],
     brandedMedicineId: {
       type: Schema.Types.ObjectId,
       ref: "BrandedMedicine",
@@ -46,7 +48,13 @@ const branchInventorySchema = new Schema<IBranchInventory>(
   { timestamps: true }
 );
 
-// Optional: Prevent duplicate entries for the same medicine in a branch
-branchInventorySchema.index({ branchId: 1, brandedMedicineId: 1 }, { unique: true });
+// ✅ new index: ensure unique per medicine + branch combination
+branchInventorySchema.index(
+  { brandedMedicineId: 1, branchIds: 1 },
+  { unique: true }
+);
 
-export default mongoose.model<IBranchInventory>("BranchInventory", branchInventorySchema);
+export default mongoose.model<IBranchInventory>(
+  "BranchInventory",
+  branchInventorySchema
+);
