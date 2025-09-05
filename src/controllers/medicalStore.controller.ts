@@ -1,11 +1,11 @@
 // controllers/medicalStoreController.ts
 import { Request, Response } from "express";
-import MedicalStore from "../models/medicalStore";
-import StoreMedicineStock from "../models/storeMedicineStock";
-import Order from "../models/order";
-import BranchInventory from "../models/branchInventory";
+import MedicalStore from "../models/medicalStore.js";
+import StoreMedicineStock from "../models/storeMedicineStock.js";
+import Order from "../models/order.js";
+import BranchInventory from "../models/branchInventory.js";
 import { Types } from "mongoose";
-import PharmaBranch from "../models/pharmaBranch";
+import PharmaBranch from "../models/pharmaBranch.js";
 
 export interface AuthenticatedRequest extends Request {
   user?: {

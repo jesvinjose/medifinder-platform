@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import csvParser from "csv-parser";
-import { GenericMedicine } from "../models/genericMedicine";
-import { BrandedMedicine } from "../models/brandedMedicine";
+import { GenericMedicine } from "../models/genericMedicine.js";
+import { BrandedMedicine } from "../models/brandedMedicine.js";
 
 export const importCSV = async (
   csvFilePath: string,

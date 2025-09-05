@@ -4,11 +4,11 @@ import {
   addOrUpdateSharedInventory,
   listInventory,
   removeBranchFromInventory,
-} from "../controllers/branchInventory.controller";
+} from "../controllers/branchInventory.controller.js";
 import {
   authenticate,
   authorizeRoles,
-} from "../middleware/authenticate.middleware";
+} from "../middleware/authenticate.middleware.js";
 
 const router = express.Router();
 

@@ -1,7 +1,7 @@
-import SharedInventory from "../models/branchInventory";
-import PharmaBranch from "../models/pharmaBranch";
+import SharedInventory from "../models/branchInventory.js";
+import PharmaBranch from "../models/pharmaBranch.js";
 import { Request, Response } from "express";
-import PharmaCompany from "../models/pharmaCompany";
+import PharmaCompany from "../models/pharmaCompany.js";
 import mongoose from "mongoose";
 
 export interface AuthenticatedRequest extends Request {
