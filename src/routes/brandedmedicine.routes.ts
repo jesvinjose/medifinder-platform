@@ -5,8 +5,8 @@ import {
   createBrandedMedicine,
   uploadCsvAndSaveToDB,
   searchMedicines,
-} from "../controllers/brandedmedicine.controller.js";
-import { upload } from "../utils/multer.js";
+} from "../controllers/brandedMedicine.controller";
+import { upload } from "../utils/multer";
 
 const router = Router();
 

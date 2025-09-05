@@ -2,13 +2,13 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors"; // ✅ ADD THIS LINE
-import genericmedicineRoutes from "./routes/genericmedicine.routes.js";
-import brandedmedicineRoutes from "./routes/brandedmedicine.routes.js";
-import authRoutes from "./routes/auth.routes.js";
-import medicalStoreRoutes from "./routes/medicalstore.routes.js";
-import pharmaCompanyRoutes from "./routes/pharmacompany.routes.js";
-import pharmaBranchRoutes from "./routes/pharmabranch.routes.js";
-import branchInventoryRoutes from "./routes/branchinventory.routes.js";
+import genericmedicineRoutes from "./routes/genericMedicine.routes";
+import brandedmedicineRoutes from "./routes/brandedMedicine.routes";
+import authRoutes from "./routes/auth.routes";
+import medicalStoreRoutes from "./routes/medicalStore.routes";
+import pharmaCompanyRoutes from "./routes/pharmaCompany.routes";
+import pharmaBranchRoutes from "./routes/pharmaBranch.routes";
+import branchInventoryRoutes from "./routes/branchInventory.routes";
 
 dotenv.config();
 

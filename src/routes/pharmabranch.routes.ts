@@ -1,10 +1,10 @@
 // routes/pharmaBranch.routes.ts
 import express from "express";
-import { listBranchOrders } from "../controllers/pharmabranch.controller.js";
+import { listBranchOrders } from "../controllers/pharmaBranch.controller";
 import {
   authenticate,
   authorizeRoles,
-} from "../middleware/authenticate.middleware.js";
+} from "../middleware/authenticate.middleware";
 
 const router = express.Router();
 

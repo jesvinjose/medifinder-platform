@@ -1,6 +1,6 @@
 import express from "express";
-import { upload } from "../utils/multer.js"; // ← import multer config
-import { uploadCsvAndSaveToDB } from "../controllers/genericmedicine.controller.js";
+import { upload } from "../utils/multer"; // ← import multer config
+import { uploadCsvAndSaveToDB } from "../controllers/genericMedicine.controller";
 
 const router = express.Router();
 

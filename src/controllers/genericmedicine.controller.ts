@@ -1,7 +1,7 @@
 // src/controllers/medicine.controller.ts
 import path from "path";
 import { Request, Response } from "express";
-import { importCSV } from "../utils/csvimporter.js";
+import { importCSV } from "../utils/csvImporter";
 
 export const uploadCsvAndSaveToDB = async (req: Request, res: Response) => {
   try {

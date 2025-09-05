@@ -1,7 +1,7 @@
 // routes/medicalStore.routes.ts
 import express from "express";
-import { addOrUpdateStock, createMedicalStore, listStoreMedicines, createOrder, } from "../controllers/medicalstore.controller.js";
-import { authenticate, authorizeRoles, } from "../middleware/authenticate.middleware.js";
+import { addOrUpdateStock, createMedicalStore, listStoreMedicines, createOrder, } from "../controllers/medicalStore.controller";
+import { authenticate, authorizeRoles, } from "../middleware/authenticate.middleware";
 const router = express.Router();
 router.post("/create_medical_store", authenticate, createMedicalStore);
 router.post("/add_or_update_stock", authenticate, authorizeRoles(["medical_store"]), addOrUpdateStock);

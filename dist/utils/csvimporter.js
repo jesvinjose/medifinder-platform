@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import csvParser from "csv-parser";
-import { GenericMedicine } from "../models/GenericMedicine.js";
-import { BrandedMedicine } from "../models/BrandedMedicine.js";
+import { GenericMedicine } from "../models/genericMedicine";
+import { BrandedMedicine } from "../models/brandedMedicine";
 export const importCSV = async (csvFilePath, type) => {
     console.log("✅ Connected to MongoDB");
     const results = [];

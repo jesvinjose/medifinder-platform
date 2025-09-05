@@ -1,9 +1,9 @@
 // controllers/authController.ts
 import { Request, Response } from "express";
-import User from "../models/User.js";
+import User from "../models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import RefreshToken from "../models/RefreshToken.js";
+import RefreshToken from "../models/refreshToken";
 
 const generateAccessToken = (user: object) =>
   jwt.sign(user, process.env.JWT_SECRET!, { expiresIn: "15m" });

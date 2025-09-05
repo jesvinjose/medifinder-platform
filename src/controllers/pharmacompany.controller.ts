@@ -1,9 +1,9 @@
 // controllers/pharmaCompany.controller.ts
-import Order from "../models/Order.js";
-import PharmaBranch from "../models/PharmaBranch.js";
-import PharmaCompany from "../models/PharmaCompany.js";
+import Order from "../models/order";
+import PharmaBranch from "../models/order";
+import PharmaCompany from "../models/pharmaBranch";
 import { Request, Response } from "express";
-import User from "../models/User.js";
+import User from "../models/user";
 import bcrypt from "bcrypt";
 export interface AuthenticatedRequest extends Request {
   user?: {
@@ -208,7 +208,7 @@ export const listBranchUsers = async (
 
     // 2. Get all branches for this company
     const branches = await PharmaBranch.find({ companyId: company._id }, "_id");
-    
+
     const branchIds = branches.map((b) => b._id);
 
     // 3. Find all users with role=pharma_branch linked to these branches

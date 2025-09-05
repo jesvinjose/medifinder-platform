@@ -1,7 +1,7 @@
-import { BrandedMedicine } from "../models/BrandedMedicine.js";
-import { GenericMedicine } from "../models/GenericMedicine.js";
+import { BrandedMedicine } from "../models/brandedMedicine";
+import { GenericMedicine } from "../models/genericMedicine";
 import path from "path";
-import { importCSV } from "../utils/csvimporter.js";
+import { importCSV } from "../utils/csvImporter";
 // Get all branded medicines
 export const getAllBrandedMedicines = async (req, res) => {
     try {

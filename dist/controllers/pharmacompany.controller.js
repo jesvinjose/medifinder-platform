@@ -1,8 +1,8 @@
 // controllers/pharmaCompany.controller.ts
-import Order from "../models/Order.js";
-import PharmaBranch from "../models/PharmaBranch.js";
-import PharmaCompany from "../models/PharmaCompany.js";
-import User from "../models/User.js";
+import Order from "../models/order";
+import PharmaBranch from "../models/order";
+import PharmaCompany from "../models/pharmaBranch";
+import User from "../models/user";
 import bcrypt from "bcrypt";
 export const createPharmaCompany = async (req, res) => {
     try {

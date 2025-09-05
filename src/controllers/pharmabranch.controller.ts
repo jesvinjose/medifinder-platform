@@ -1,7 +1,7 @@
 // controllers/pharmaBranch.controller.ts
-import PharmaBranch from "../models/PharmaBranch.js";
+import PharmaBranch from "../models/pharmaBranch";
 import { Request, Response } from "express";
-import Order from "../models/Order.js";
+import Order from "../models/order";
 
 export interface AuthenticatedRequest extends Request {
   user?: {

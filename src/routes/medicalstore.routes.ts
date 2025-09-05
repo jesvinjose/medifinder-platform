@@ -5,11 +5,11 @@ import {
   createMedicalStore,
   listStoreMedicines,
   createOrder,
-} from "../controllers/medicalstore.controller.js";
+} from "../controllers/medicalStore.controller";
 import {
   authenticate,
   authorizeRoles,
-} from "../middleware/authenticate.middleware.js";
+} from "../middleware/authenticate.middleware";
 
 const router = express.Router();
 

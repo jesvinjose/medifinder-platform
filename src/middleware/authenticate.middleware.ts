@@ -27,7 +27,7 @@ export const authenticate = (
     if (typeof decoded === "string") {
       return res.status(401).json({ message: "Invalid token format" });
     }
-    req.user = decoded as { _id: string; role: string }; // Now safely assign; // contains _id and role
+    req.user = decoded as { _id: string; role: string; branchId: string }; // Now safely assign; // contains _id and role
     next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid token" });

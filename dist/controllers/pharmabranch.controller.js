@@ -1,6 +1,6 @@
 // controllers/pharmaBranch.controller.ts
-import PharmaBranch from "../models/PharmaBranch.js";
-import Order from "../models/Order.js";
+import PharmaBranch from "../models/pharmaBranch";
+import Order from "../models/order";
 export const listBranchOrders = async (req, res) => {
     try {
         if (!req.user) {

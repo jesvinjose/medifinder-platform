@@ -9,12 +9,12 @@ import {
   listCompanyOrders,
   listPharmaBranches,
   updatePharmaCompany,
-} from "../controllers/pharmacompany.controller.js";
+} from "../controllers/pharmaCompany.controller";
 
 import {
   authenticate,
   authorizeRoles,
-} from "../middleware/authenticate.middleware.js";
+} from "../middleware/authenticate.middleware";
 const router = express.Router();
 
 router.post(
