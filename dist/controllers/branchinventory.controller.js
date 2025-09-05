@@ -1,6 +1,7 @@
 import SharedInventory from "../models/branchInventory";
 import PharmaBranch from "../models/pharmaBranch";
 import PharmaCompany from "../models/pharmaCompany";
+import mongoose from "mongoose";
 export const addOrUpdateSharedInventory = async (req, res) => {
     try {
         if (!req.user) {
@@ -58,7 +59,6 @@ export const listInventory = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized: Missing user" });
         }
         const { role, _id, branchId } = req.user;
-        console.log(branchId, "<----------------branchId");
         const { page = 1, limit = 10, search = "" } = req.body;
         const skip = (Number(page) - 1) * Number(limit);
         let branchFilter = [];
@@ -69,13 +69,13 @@ export const listInventory = async (req, res) => {
                 return res.status(404).json({ message: "Company not found" });
             }
             const branches = await PharmaBranch.find({ companyId: company._id });
-            branchFilter = branches.map((b) => b._id);
+            branchFilter = branches.map((b) => new mongoose.Types.ObjectId(b._id));
         }
         else if (role === "pharma_branch") {
             if (!branchId) {
                 return res.status(400).json({ message: "Branch ID missing" });
             }
-            branchFilter = [branchId];
+            branchFilter = [new mongoose.Types.ObjectId(branchId)];
         }
         else {
             return res.status(403).json({ message: "Unauthorized role" });
@@ -83,7 +83,6 @@ export const listInventory = async (req, res) => {
         // 🔎 Build aggregation pipeline
         const pipeline = [
             { $match: { branchIds: { $in: branchFilter } } },
-            // Lookup medicine details
             {
                 $lookup: {
                     from: "brandedmedicines",
@@ -93,7 +92,6 @@ export const listInventory = async (req, res) => {
                 },
             },
             { $unwind: "$medicine" },
-            // Lookup branch details
             {
                 $lookup: {
                     from: "pharmabranches",
@@ -103,7 +101,7 @@ export const listInventory = async (req, res) => {
                 },
             },
         ];
-        // ✅ Wide search (medicine name OR branch name OR city)
+        // ✅ Wide search
         if (search) {
             pipeline.push({
                 $match: {
@@ -115,29 +113,43 @@ export const listInventory = async (req, res) => {
                 },
             });
         }
-        // Count total first
-        const totalPipeline = [...pipeline, { $count: "total" }];
-        const totalResult = await SharedInventory.aggregate(totalPipeline);
-        const total = totalResult[0]?.total || 0;
-        // Add pagination
-        pipeline.push({ $skip: skip }, { $limit: Number(limit) });
-        // Final projection
-        pipeline.push({
-            $project: {
-                _id: 1,
-                quantity: 1,
-                priceToRetailer: 1,
-                mrp: 1,
-                lastUpdated: 1,
-                "medicine._id": 1,
-                "medicine.name": 1,
-                "medicine.company": 1,
-                "branches._id": 1,
-                "branches.branchName": 1,
-                "branches.city": 1,
+        // 🔥 Single aggregation with facet
+        const result = await SharedInventory.aggregate([
+            {
+                $facet: {
+                    metadata: [{ $count: "total" }],
+                    data: [
+                        ...pipeline,
+                        { $skip: skip },
+                        { $limit: Number(limit) },
+                        {
+                            $project: {
+                                _id: 1,
+                                quantity: 1,
+                                priceToRetailer: 1,
+                                mrp: 1,
+                                lastUpdated: 1,
+                                "medicine._id": 1,
+                                "medicine.name": 1,
+                                "medicine.company": 1,
+                                "branches._id": 1,
+                                "branches.branchName": 1,
+                                "branches.city": 1,
+                            },
+                        },
+                    ],
+                },
             },
-        });
-        const inventories = await SharedInventory.aggregate(pipeline);
+        ]);
+        const total = result[0]?.metadata[0]?.total || 0;
+        let inventories = result[0]?.data || [];
+        // Filter branches if branch login
+        if (role === "pharma_branch" && branchId) {
+            inventories = inventories.map((inv) => ({
+                ...inv,
+                branches: inv.branches.filter((b) => b._id.toString() === String(branchId)),
+            }));
+        }
         return res.status(200).json({
             message: "Inventory fetched successfully",
             status: true,
